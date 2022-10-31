@@ -8,15 +8,24 @@ const AddUser = (props) => {
   // Use empty string '' for starting input to be empty
   const [enteredUsername, setEnteredUsername] = useState('');
   const [enteredAge, setEnteredAge] = useState('');
+  const [error, setError] = useState();
 
   const addUserHandler = (event) => {
     event.preventDefault();
     // Checking to see if something is entered in the form, if not- return
     if (enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
+      setError({
+        title: 'Invalid Input',
+        message: 'Please enter a valid name and age (non-empty values)',
+      });
       return;
     }
     // check for age input value, if smaller than 1. Adding + to convert enteredAge to a number from a string
     if (+enteredAge < 1) {
+      setError({
+        title: 'Invalid age',
+        message: 'Please enter a valid age (> 0)',
+      });
       return;
     }
     props.onAddUser(enteredUsername, enteredAge);
@@ -33,9 +42,20 @@ const AddUser = (props) => {
     setEnteredAge(event.target.value);
   };
 
+  // To get rid of error modal
+  const errorHandler = () => {
+    setError(null);
+  };
+
   return (
     <div>
-      <ErrorModal title='An Error Occured' message='Something went wrong!' />
+      {error && (
+        <ErrorModal
+          title={error.title}
+          message={error.message}
+          onConfirm={errorHandler}
+        />
+      )}
       <Card className={classes.input}>
         <form onSubmit={addUserHandler}>
           <label htmlFor='username'>Username</label>
